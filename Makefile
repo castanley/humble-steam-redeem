@@ -19,6 +19,7 @@ sync:
 
 test:
 	uv run python smoke_test.py
+	uv run python test_filter_logic.py
 
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
