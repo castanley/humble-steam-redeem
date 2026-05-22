@@ -122,7 +122,7 @@ def match_ownership(
     owned_app_details: dict[int, str], game: dict[str, Any]
 ) -> tuple[int, int | None]:
     """Fuzzy-match *game* against owned apps. Returns (score, appid) or (0, None)."""
-    threshold = 70
+    threshold = 85
     matches = [
         (fuzz.token_set_ratio(appname, game["human_name"]), appid)
         for appid, appname in owned_app_details.items()
@@ -136,6 +136,6 @@ def match_ownership(
         best_match = max(refined_matches, key=lambda item: item[0])
     else:
         best_match = (0, None)
-    if best_match[0] < 35:
+    if best_match[0] < 85:
         best_match = (0, None)
     return best_match
