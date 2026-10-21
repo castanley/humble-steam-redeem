@@ -39,6 +39,18 @@ _SHORT_ERRORS: dict[int, str] = {
 }
 
 
+def _game_name(key: dict[str, Any]) -> str:
+    """Return a usable display name for complete or partial Humble key data."""
+    name = key.get("human_name")
+    if isinstance(name, str) and name.strip():
+        return name.strip()
+
+    app_id = key.get("steam_app_id")
+    if app_id is not None:
+        return f"Unknown game (Steam app {app_id})"
+    return "Unknown Humble game"
+
+
 def redeem_steam_key(session, key: str) -> int:
     """Redeem a single Steam key. Returns 0 on success or an error code.
 
@@ -188,7 +200,7 @@ def redeem_steam_keys(
             for game in noted_keys:
                 best_match = match_ownership(owned_app_details, game)
                 if best_match[1] is not None and best_match[1] in owned_app_details:
-                    skipped_games[game["human_name"].strip()] = game
+                    skipped_games[_game_name(game)] = game
                 else:
                     unowned_games.append(game)
 
@@ -250,7 +262,7 @@ def redeem_steam_keys(
     with Live(display.build(), console=console, refresh_per_second=4) as live:
         with KeyFileManager() as kfm:
             for key in unowned_games:
-                name = key["human_name"]
+                name = _game_name(key)
                 display.set_current(name)
                 live.update(display.build())
 

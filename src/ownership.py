@@ -122,13 +122,19 @@ def match_ownership(
     owned_app_details: dict[int, str], game: dict[str, Any]
 ) -> tuple[int, int | None]:
     """Fuzzy-match *game* against owned apps. Returns (score, appid) or (0, None)."""
+    human_name = game.get("human_name")
+    if not isinstance(human_name, str) or not human_name.strip():
+        # Humble's nested order data can contain steam_app_id records that are
+        # not complete game-key entries. They have no title to compare.
+        return (0, None)
+
     threshold = 70
     matches = [
-        (fuzz.token_set_ratio(appname, game["human_name"]), appid)
+        (fuzz.token_set_ratio(appname, human_name), appid)
         for appid, appname in owned_app_details.items()
     ]
     refined_matches = [
-        (fuzz.token_sort_ratio(owned_app_details[appid], game["human_name"]), appid)
+        (fuzz.token_sort_ratio(owned_app_details[appid], human_name), appid)
         for score, appid in matches
         if score > threshold
     ]

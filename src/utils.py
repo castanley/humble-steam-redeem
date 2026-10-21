@@ -8,6 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any, Generator, Union
 
+# Rich renders status symbols that aren't representable in the Windows
+# console's legacy code pages. Configure streams before creating the Console.
+if os.name == "nt":
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
 from rich import box
 from rich.console import Console
 from rich.panel import Panel

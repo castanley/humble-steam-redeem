@@ -142,7 +142,8 @@ def redeem_humble_key(session, tpk: dict[str, Any]) -> str:
 
     resp_json = resp.json()
     if resp.status_code != 200 or "error_msg" in resp_json or not resp_json["success"]:
-        print_error(f"Error redeeming key on Humble for {tpk['human_name']}")
+        name = tpk.get("human_name") or "unknown game"
+        print_error(f"Error redeeming key on Humble for {name}")
         if "error_msg" in resp_json:
             print_error(resp_json["error_msg"])
         return ""
